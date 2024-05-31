@@ -10,9 +10,10 @@ def main():
 
     inputalgo = input('\nType the number of the algorithm you want to run. \n1. Forward Selection \n2. Backward Elimination \n3. Special Algorithm.\n')
 
-    algonum = int(inputalgo)
-
-    print(greedy_forward_feature_selection(featuresnum))
+    if (inputalgo == 1):
+        print(greedy_forward_feature_selection(featuresnum))
+    else:
+        print(backward_elimination(featuresnum))
 
 
 def greedy_forward_feature_selection(num_features):
@@ -57,6 +58,45 @@ def greedy_forward_feature_selection(num_features):
             print(f'\n\n(Warning, Accuracy has decreased! Continuing search in case of local maxima)')
             print(f'Feature set {feature_subset} was best, accuracy is {localAccuracy:.2f}%\n\n')
 
+    print(f'Finished search!! The best feature subset is {final_set}, which has an accuracy of {topAccuracy:.2f}%')
+
+def backward_elimination(num_features):
+    # Start with a full subset of features
+    feature_subset = list(range(1, num_features + 1))
+    final_set = copy.deepcopy(feature_subset)
+    topAccuracy = 0.0
+
+    # Initial accuracy with all features
+    accuracy = random.uniform(0.0, 100.0)
+    topAccuracy = accuracy
+    print(f'Using feature(s) {feature_subset} initial accuracy is {topAccuracy:.2f}%')
+
+    # Loop until we have one feature left
+    while len(feature_subset) > 1:
+        remove_this = -1
+        localAccuracy = -1.0
+        
+        for j in feature_subset:
+            # Copy current subset into temp_subset
+            temp_subset = copy.deepcopy(feature_subset)
+            # Remove feature j from temp_subset and check accuracy
+            temp_subset.remove(j)
+
+            accuracy = random.uniform(0.0, 100.0)
+            print(f'\tUsing feature(s) {temp_subset} accuracy is {accuracy:.2f}%')
+
+            if accuracy > localAccuracy:
+                localAccuracy = accuracy
+                remove_this = j
+
+        # Update feature subset based on the highest accuracy found in this iteration
+        if remove_this >= 0:
+            feature_subset.remove(remove_this)
+            print(f'\n\nFeature set {feature_subset} was best, accuracy is {localAccuracy:.2f}%\n\n')
+            if localAccuracy > topAccuracy:
+                topAccuracy = localAccuracy
+                final_set = copy.deepcopy(feature_subset)
+    
     print(f'Finished search!! The best feature subset is {final_set}, which has an accuracy of {topAccuracy:.2f}%')
 
 
