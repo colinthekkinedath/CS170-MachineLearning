@@ -35,7 +35,7 @@ def greedy_forward_feature_selection(num_features):
                 # Add feature j to temp_subset and check accuracy
                 temp_subset.append(j)
 
-                accuracy = random.uniform(0.0, 100.0)
+                accuracy = oneOut_Validation()
                 print(f'\tUsing feature(s) {temp_subset} accuracy is {accuracy:.2f}%')
 
                 if accuracy > localAccuracy:
@@ -82,7 +82,7 @@ def backward_elimination(num_features):
             # Remove feature j from temp_subset and check accuracy
             temp_subset.remove(j)
 
-            accuracy = random.uniform(0.0, 100.0)
+            accuracy = oneOut_Validation()
             print(f'\tUsing feature(s) {temp_subset} accuracy is {accuracy:.2f}%')
 
             if accuracy > localAccuracy:
@@ -99,6 +99,8 @@ def backward_elimination(num_features):
     
     print(f'Finished search!! The best feature subset is {final_set}, which has an accuracy of {topAccuracy:.2f}%')
 
+def oneOut_Validation():
+    return random.uniform(0.0, 100.0)
 
 if __name__ == "__main__":
     main()
