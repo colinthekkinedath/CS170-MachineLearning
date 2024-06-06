@@ -10,7 +10,7 @@ def main():
 
     inputalgo = input('\nType the number of the algorithm you want to run. \n1. Forward Selection \n2. Backward Elimination \n3. Special Algorithm.\n')
 
-    if (inputalgo == 1):
+    if (inputalgo == "1"):
         print(greedy_forward_feature_selection(featuresnum))
     else:
         print(backward_elimination(featuresnum))
