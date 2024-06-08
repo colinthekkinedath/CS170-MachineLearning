@@ -39,50 +39,46 @@ def one_out_validator(data, feature_subset, num_instances):
 
 	return accuracy
 
-def forwardSelection(data, num_instances, num_features):
-	"""
-	Returns the subset of features that has the highest accuracy
-	by the forward selection algorithm.
-	"""
 
-	# Start with empty subset
-	# use copy.deepcopy to update feature_subset
-	feature_subset = []
-	final_set = []
-	# test each feature first, find highest accuracy and append to subset
-	topAccuracy = 0.0
+def forward_selection(data, num_instances, num_features):
+    
+    feature_subset = []
+    final_set = []
+    top_accuracy = 0.0
 
-	# Loop a maximum of num_features times, 2^k - 1 possibilities
-	for i in range(num_features):
-		add_this = -1
-		local_add = -1
-		localAccuracy = 0.0
-		for j in range(1, num_features + 1):
-			if j not in feature_subset:
-				# If the feature j is not in the subset, can perform algorithm. Otherwise, ignore.
-				# Copy current subset into temp_subset
-				temp_subset = copy.deepcopy(feature_subset)
-				# Since j is not in the subset, we add it to temp and check accuracy
-				temp_subset.append(j)
+    for _ in range(num_features):
+        best_feature_to_add = None
+        local_best_feature = None
+        local_best_accuracy = 0.0
 
-				accuracy = one_out_validator(data, temp_subset, num_instances)
-				print('\tUsing feature(s) ', temp_subset, ' accuracy is ', accuracy, '%')
-				if accuracy > topAccuracy:
-					topAccuracy = accuracy
-					add_this = j
-				if accuracy > localAccuracy:
-					localAccuracy = accuracy
-					local_add = j
-		if add_this >= 0:
-			feature_subset.append(add_this)
-			final_set.append(add_this)
-			print('\n\nFeature set ', feature_subset, ' was best, accuracy is ', topAccuracy, '%\n\n')
-		else:
-			print('\n\n(Warning, Accuracy has decreased! Continuing search in case of local maxima)')
-			feature_subset.append(local_add)
-			print('Feature set ', feature_subset, ' was best, accuracy is ', localAccuracy, '%\n\n')
+        for feature in range(1, num_features + 1):
+            if feature not in feature_subset:
+                temp_subset = copy.deepcopy(feature_subset)
+                temp_subset.append(feature)
 
-	print('Finished search!! The best feature subset is', final_set, ' which has an accuracy of accuracy: ', topAccuracy, '%')
+                accuracy = one_out_validator(data, temp_subset, num_instances)
+                print(f'\tUsing feature(s) {temp_subset} accuracy is {accuracy}%')
+
+                if accuracy > top_accuracy:
+                    top_accuracy = accuracy
+                    best_feature_to_add = feature
+
+                if accuracy > local_best_accuracy:
+                    local_best_accuracy = accuracy
+                    local_best_feature = feature
+
+        if best_feature_to_add is not None:
+            feature_subset.append(best_feature_to_add)
+            final_set.append(best_feature_to_add)
+            print(f'\n\nFeature set {feature_subset} was best, accuracy is {top_accuracy}%\n\n')
+        else:
+            print('\n\n(Warning, Accuracy has decreased! Continuing search in case of local maxima)')
+            feature_subset.append(local_best_feature)
+            print(f'Feature set {feature_subset} was best, accuracy is {local_best_accuracy}%\n\n')
+
+    print(f'Finished search!! The best feature subset is {final_set} which has an accuracy of {top_accuracy}%')
+
+
 
 def backwardElimination(data, num_instances, num_features, topAcc):
 	"""
@@ -230,7 +226,7 @@ def main():
 	print('Beginning search.\n\n')
 
 	if choice == 1:
-		forwardSelection(normalized_instances, num_instances, num_features)
+		forward_selection(normalized_instances, num_instances, num_features)
 	elif choice == 2:
 		backwardElimination(normalized_instances, num_instances, num_features, accuracy)
 	elif choice == 3:
