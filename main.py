@@ -80,53 +80,44 @@ def forward_selection(data, num_instances, num_features):
 
 
 
-def backwardElimination(data, num_instances, num_features, topAcc):
-	"""
-	Returns the subset of features that has the highest accuracy 
-	by the backward elimination algorithm.
-	"""
+def backward_elimination(data, num_instances, num_features, initial_accuracy):
 
-	# Similar to forward selection, except it works by elimination from a full set.
-	# If j is in the set, then remove it from the temp set and test accuracy
-	# If acc > highestAcc -> set new highestAcc and remove it from the actual subset
-	# If at any time the accuracy is no longer increasing, break the loop
-	# This is a greedy algorithm, so it will stop at a local maxima
+    feature_subset = list(range(1, num_features + 1))
+    final_set = list(range(1, num_features + 1))
+    top_accuracy = initial_accuracy
 
-	# Start with full feature set
-	feature_subset = [i+1 for i in range(num_features)]
-	final_set = [i+1 for i in range(num_features)]
-	# Set current accuracy to accuracy found before feature algorithm
-	topAccuracy = topAcc
-	# Loop a maximum of num_features times, 2^k - 1 possibilties 
-	for i in range(num_features):
-		remove_this = -1
-		local_remove = -1
-		localAccuracy = 0.0
-		for j in range(1, num_features + 1):
+    for _ in range(num_features):
+        best_feature_to_remove = None
+        local_best_feature = None
+        local_best_accuracy = 0.0
 
-			if j in feature_subset:
-				temp_subset = copy.deepcopy(feature_subset)
+        for feature in range(1, num_features + 1):
+            if feature in feature_subset:
+                temp_subset = copy.deepcopy(feature_subset)
+                temp_subset.remove(feature)
 
-				temp_subset.remove(j)
+                accuracy = one_out_validator(data, temp_subset, num_instances)
+                print(f'\tUsing feature(s) {temp_subset} accuracy is {accuracy}%')
 
-				accuracy = one_out_validator(data, temp_subset, num_instances)
-				print('\tUsing feature(s) ', temp_subset, ' accuracy is ', accuracy, '%')
-				if accuracy > topAccuracy:
-					topAccuracy = accuracy
-					remove_this = j
-				if accuracy > localAccuracy:
-					localAccuracy = accuracy
-					local_remove = j
-		if remove_this >= 0:
-			feature_subset.remove(remove_this)
-			final_set.remove(remove_this)
-			print('\n\nFeature set ', feature_subset, ' was best, accuracy is ', topAccuracy, '%\n\n')
-		else:
-			print('\n\n(Warning, Accuracy has decreased! Continuing search in case of local maxima)')
-			feature_subset.remove(local_remove)
-			print('Feature set ', feature_subset, ' was best, accuracy is ', localAccuracy, '%\n\n')
+                if accuracy > top_accuracy:
+                    top_accuracy = accuracy
+                    best_feature_to_remove = feature
 
-	print('Finished search!! The best feature subset is', final_set, ' which has an accuracy of accuracy: ', topAccuracy, '%')
+                if accuracy > local_best_accuracy:
+                    local_best_accuracy = accuracy
+                    local_best_feature = feature
+
+        if best_feature_to_remove is not None:
+            feature_subset.remove(best_feature_to_remove)
+            final_set.remove(best_feature_to_remove)
+            print(f'\n\nFeature set {feature_subset} was best, accuracy is {top_accuracy}%\n\n')
+        else:
+            print('\n\n(Warning, Accuracy has decreased! Continuing search in case of local maxima)')
+            feature_subset.remove(local_best_feature)
+            print(f'Feature set {feature_subset} was best, accuracy is {local_best_accuracy}%\n\n')
+
+    print(f'Finished search!! The best feature subset is {final_set} which has an accuracy of {top_accuracy}%')
+
 
 
 
@@ -228,9 +219,9 @@ def main():
 	if choice == 1:
 		forward_selection(normalized_instances, num_instances, num_features)
 	elif choice == 2:
-		backwardElimination(normalized_instances, num_instances, num_features, accuracy)
+		backward_elimination(normalized_instances, num_instances, num_features, accuracy)
 	elif choice == 3:
-		print('Special algorithm not completed yet, exiting.')
+		print('Not implemented yet. Exiting program.')
 
 if __name__ == '__main__':
 	main()
