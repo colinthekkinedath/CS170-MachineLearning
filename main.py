@@ -3,6 +3,28 @@ import copy
 
 def main():
     print("Welcome to Keshav, Colin, Vijay, and David's Feature Selection Algorithm.\n")
+    
+    filename = input('Type the name of the file to test: ')
+
+    dataVals = {} # dictionary that will hold the data
+
+    file = open(filename, 'r')
+    data = file.readlines() # read all lines into a list
+
+    for row in data: # parse the row
+        row = row.split('\n')
+        row = row[0].split(' ')
+        row.remove('')
+
+        classVal = int(row[0][0]) # get the instance class
+
+        for i in row[1:]:
+            for j in i.split(): # takes care of any whitespace that got through
+                instances = dataVals.get(classVal, [])
+                instances.append(float(j)) # python float() converts IEEE to double automatically
+                dataVals[classVal] = instances
+
+    file.close()
 
     inputfeatures = input('Please enter total number of features:')
 
@@ -14,6 +36,8 @@ def main():
         print(greedy_forward_feature_selection(featuresnum))
     else:
         print(backward_elimination(featuresnum))
+
+    
 
 
 def greedy_forward_feature_selection(num_features):
@@ -101,6 +125,7 @@ def backward_elimination(num_features):
 
 def oneOut_Validation():
     return random.uniform(0.0, 100.0)
+
 
 if __name__ == "__main__":
     main()
