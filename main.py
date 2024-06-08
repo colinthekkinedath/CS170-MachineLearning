@@ -147,81 +147,56 @@ def normalize(data, num_features, num_instances):
 	return data
 
 
+def read_data(file):
+    try:
+        with open(file, 'r') as data:
+            first_line = data.readline()
+            num_features = len(first_line.split()) - 1
+            instances = [list(map(float, line.split())) for line in data.readlines()]
+            num_instances = len(instances)
+        return instances, num_instances, num_features
+    except FileNotFoundError:
+        raise FileNotFoundError(f'The file {file} does not exist. Exiting program.')
+
+def algorithm_selection(num_features, num_instances):
+    print('Type the number of the algorithm you want to run.')
+    print('1. Forward Selection')
+    print('2. Backward Elimination')
+    print('3. Special algorithm')
+    choice = int(input())
+    while choice not in range(1, 4):
+        print('Invalid choice, please try again.')
+        choice = int(input())
+    print(f'This dataset has {num_features} features (not including the class attribute), with {num_instances} instances.')
+    return choice
+
+
+def print_accuracy(accuracy, num_features):
+    formatted_accuracy = "{:.1f}".format(accuracy)
+    print(f'Running nearest neighbor with all {num_features} features, using "leaving-one-out" evaluation, I get an accuracy of {formatted_accuracy}%.')
+
 def main():
-	print("Welcome to Keshav, Colin, Vijay, and David's Feature Selection Algorithm.\n")
-	file = input('Type in the name of the file to test: ')
+    print("Welcome to Keshav, Colin, Vijay, and David's Feature Selection Algorithm.\n")
 
-	# First column is the class, value always 1 or 2.
-	# Other columns = features, maximum up to 64
-	# 1 x x x x x x x x x ...
-	# 2 x x x x x x x x x ...
-	# Number of instances = total lines in file
-	# Number features = total in one line - 1, bc first is classification
-	# Max instances = 2048
+    file = input('Type in the name of the file to test: ')
+    instances, num_instances, num_features = read_data(file)
+    choice = algorithm_selection(num_features, num_instances)
 
-	# Store data from file
-	# Open file, error exception
-	try:
-		data = open(file, 'r')
-	except:
-		raise IOError('The file '+ file +' does not exist. Exiting program.')
+    print('Please wait while I normalize the data... Done!')
+    normalized_instances = normalize(instances, num_features, num_instances)
 
-	# Read in first line to see # features 
-	firstLine = data.readline()
+    accuracy = one_out_validator(normalized_instances, [], num_instances)
+    print_accuracy(accuracy, num_features)
 
-	num_features = len(firstLine.split()) - 1
+    print('Beginning search.\n\n')
 
-	# Read in all lines on file to get # instances
-	data.seek(0)
-	num_instances = sum(1 for line in data)
+    if choice == 1:
+        forward_selection(normalized_instances, num_instances, num_features)
+    elif choice == 2:
+        backward_elimination(normalized_instances, num_instances, num_features, accuracy)
+    elif choice == 3:
+        print('Not implemented yet. Exiting program.')
 
-	# Use seek(0) to reset cursor to start of file
-	data.seek(0)
-
-	# Store data into variable/array
-	instances = [[] for i in range(num_instances)]
-	for i in range(num_instances):
-		instances[i] = [float(j) for j in data.readline().split()]
-
-	# We now have a 2D array where instance[x][0] is the classification, and instance[x][num_features] is the last feature for x
-	# x = instance id	
-	
-	# Algorithm selection
-	print('Type the number of the algorithm you want to run.')
-	print('1. Forward Selection')
-	print('2. Backward Elimination')
-	print('3. Special algorithm')
-	choice = int(input())
-	while choice < 1 or choice > 3:
-		print('Invalid choice, please try again.')
-		choice = int(input())
-
-	print('This dataset has ' + str(num_features) + ' features (not including the class attribute), with ' + str(num_instances) + ' instances.')
-
-	# CONVERT/NORMALIZE DATA -> begin search
-	print('Please wait while I normalize the data... Done!')
-	normalized_instances = normalize(instances, num_features, num_instances)
-
-	# Run nearest neighbor + one out validation + ALL features, print results
-	all_features = []
-	for i in range(1, num_features + 1):
-		all_features.append(i)
-
-	accuracy = one_out_validator(normalized_instances, [], num_instances)
-	print('Running nearest neighbor with all ', num_features, ' features, using "leaving-one-out" evaluation, I get an accuracy of ', accuracy, '%.')
-
-	# TO FIX: Add algorithm to make the subsets in the chosen algorithms
-
-
-	# TO-DO: BE methods, choice redirection
-	print('Beginning search.\n\n')
-
-	if choice == 1:
-		forward_selection(normalized_instances, num_instances, num_features)
-	elif choice == 2:
-		backward_elimination(normalized_instances, num_instances, num_features, accuracy)
-	elif choice == 3:
-		print('Not implemented yet. Exiting program.')
 
 if __name__ == '__main__':
 	main()
