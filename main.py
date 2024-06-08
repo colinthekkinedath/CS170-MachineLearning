@@ -244,7 +244,7 @@ def main():
 	for i in range(1, num_features + 1):
 		all_features.append(i)
 
-	accuracy = oneOutValidator(normalized_instances, all_features, num_instances)
+	accuracy = oneOutValidator(normalized_instances, [], num_instances)
 	print('Running nearest neighbor with all ', num_features, ' features, using "leaving-one-out" evaluation, I get an accuracy of ', accuracy, '%.')
 
 	# TO FIX: Add algorithm to make the subsets in the chosen algorithms
