@@ -2,41 +2,28 @@ import math
 import copy
 
 def nearestNeighborClassifier(data, point, feature_subset, num_instances):
-	""" 
-	Computes distance to training points and
-	returns the class label of the nearest training
-	point.
-	data: all the training points for this problem
-	point: instance id of new data point that needs to be classified 
-	num_instances: total instances in data set
-	features: feature subset being used for classifier
-	"""
-	# Initialize variables for whole scope of function
-	nearestNeighbor = 0
-	shortest_distance = float('inf')
 
-	# Loop over all instances
-	for i in range(num_instances):
-		# If the instance == the point, ignore/do nothing
-		if point == i:
-			pass
-		# Else, find nearest neighbor and classify the point
-		else:
-			# nearestNeighbor keeps track of the nearest neighbor
-			# shortest_distance determines which is nearest neighbor
-			distance = 0
-			# Get distance, compare and update nearestNeighbor
-			# feature_subset: subset of features. ex) [1,2,4] -> features 1, 2 and 4
-			for j in range(len(feature_subset)):
-				distance = distance + pow((data[i][feature_subset[j]] - data[point][feature_subset[j]]), 2)
+    nearest_neighbor = None
+    shortest_distance = float('inf')
 
-			distance = math.sqrt(distance)
+    for i in range(num_instances):
+        if i == point:
+            continue
+        
+        distance = calculate_distance(data, point, i, feature_subset)
 
-			if distance < shortest_distance:
-				nearestNeighbor = i 
-				shortest_distance = distance
+        if distance < shortest_distance:
+            nearest_neighbor = i
+            shortest_distance = distance
 
-	return nearestNeighbor
+    return nearest_neighbor
+
+def calculate_distance(data, point1, point2, feature_subset):
+
+    distance = 0
+    for feature in feature_subset:
+        distance += (data[point1][feature] - data[point2][feature]) ** 2
+    return math.sqrt(distance)
 
 
 def oneOutValidator(data, feature_subset, num_instances):
