@@ -182,7 +182,7 @@ def algorithm_selection(num_features, num_instances):
     while choice not in range(1, 4):
         print('Invalid choice, please try again.')
         choice = int(input())
-    print(f'This dataset has {num_features} features (not including the class attribute), with {num_instances} instances.')
+    print(f'This dataset has {num_features} features (not including the class attribute), with {num_instances + 1} instances.')
     return choice
 
 # Function to print accuracy
