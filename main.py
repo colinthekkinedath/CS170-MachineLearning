@@ -188,7 +188,7 @@ def algorithm_selection(num_features, num_instances):
 # Function to print accuracy
 def print_accuracy(accuracy, num_features):
     formatted_accuracy = "{:.1f}".format(accuracy)
-    print(f'Running nearest neighbor with all {num_features} features, using "leaving-one-out" evaluation, I get an accuracy of {formatted_accuracy}%.')
+    print(f'Running nearest neighbor with no features (default rate), using "leaving-one-out" evaluation, I get an accuracy of {formatted_accuracy}%.')
 
 # Main function to run the program
 def main():
